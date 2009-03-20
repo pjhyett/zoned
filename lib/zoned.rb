@@ -1,10 +1,12 @@
 module Zoned
-  mattr_reader :server_offset
-  @@server_offset = Time.now.gmtoff
-  
-  def zoned(date)
-    return date unless timezone = controller.send(:cookies)['timezone']
-    date - (server_offset - timezone.to_i)
+  def zoned(date_or_time)
+    return date_or_time unless timezone_offset
+    date_or_time.utc + timezone_offset
   end
   alias :z :zoned
+  
+  protected
+    def timezone_offset
+      controller.send(:cookies)['timezone'].to_i
+    end
 end
